@@ -5,11 +5,7 @@ struct GameRowView: View {
 
     var body: some View {
         HStack {
-            Image(systemName: game.price.isOnSale ? "tag.fill" : "gamecontroller.fill")
-                .font(.title2)
-                .foregroundStyle(game.price.isOnSale ? Color.red : Color.accentColor)
-                .frame(minWidth: 44, minHeight: 44)
-                .accessibilityHidden(true)
+            GameArtworkView(imageURL: game.imageURL)
 
             VStack(alignment: .leading) {
                 Text(game.title)

@@ -4,6 +4,7 @@ struct Game: Decodable, Identifiable, Hashable, Sendable {
     let id: String
     let title: String
     let releaseDate: String?
+    let imageURL: URL?
     let sourceURL: URL?
     let price: GamePrice
 
@@ -11,6 +12,7 @@ struct Game: Decodable, Identifiable, Hashable, Sendable {
         case id
         case title
         case releaseDate
+        case imageURL = "imageUrl"
         case sourceURL = "sourceUrl"
         case price
     }

@@ -59,6 +59,7 @@ function normalizeGame(snapshot, item) {
   if (title === null) return null;
   const nsuid = findNsuid(item);
   const sourceUrl = absoluteUrl(stringField(item, FIELD_NAMES.sourceUrl), snapshot.sourceUrl);
+  const imageUrl = absoluteUrl(nestedStringField(item, ['imageHero', 'url']), snapshot.sourceUrl);
   return {
     id: nsuid ? `${snapshot.region}:${nsuid}` : `${snapshot.region}:source:${stableSourceKey(item, title)}`,
     region: snapshot.region,
@@ -68,9 +69,18 @@ function normalizeGame(snapshot, item) {
     developer: stringField(item, FIELD_NAMES.developer),
     releaseDate: stringField(item, FIELD_NAMES.releaseDate),
     productType: normalizeProductType(valueField(item, FIELD_NAMES.productType)),
+    imageUrl,
     sourceUrl,
     sourceUpdatedAt: snapshot.fetchedAt
   };
+}
+
+function nestedStringField(item, path) {
+  let value = item;
+  for (const key of path) {
+    value = value?.[key];
+  }
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
 }
 
 function valueField(item, names) {

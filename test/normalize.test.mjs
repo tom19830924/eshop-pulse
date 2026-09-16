@@ -16,6 +16,7 @@ test('normalizes a Taiwan catalog item into the shared DTO', () => {
       developer: 'Nintendo',
       releaseDate: '2023-10-20',
       category: ['下載版'],
+      imageHero: { url: 'https://images.example.com/mario.jpg' },
       pageLink: '/tw/software/70010000068664'
     }]
   });
@@ -29,6 +30,7 @@ test('normalizes a Taiwan catalog item into the shared DTO', () => {
     developer: 'Nintendo',
     releaseDate: '2023-10-20',
     productType: '下載版',
+    imageUrl: 'https://images.example.com/mario.jpg',
     sourceUrl: 'https://www.nintendo.com/tw/software/70010000068664',
     sourceUpdatedAt: '2026-09-14T00:00:00.000Z'
   });
