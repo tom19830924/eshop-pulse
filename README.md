@@ -60,3 +60,19 @@ https://<github-user>.github.io/eshop-pulse/normalized/games.json
 
 The repository and Pages site must be public when using GitHub Free. Enable
 **Settings → Pages → Build and deployment → GitHub Actions** once.
+
+## Manual maintenance
+
+The daily `Publish catalog snapshot` workflow runs the full catalog, price,
+normalization, and Pages deployment pipeline at 02:23 Asia/Taipei.
+
+Use the `Maintain published catalog data` workflow from the Actions tab when a
+single maintenance operation is needed. It restores the two raw snapshots from
+Pages first, then offers three operations:
+
+- `refresh-catalog`: fetch a new catalog, then rebuild and deploy the DTO.
+- `refresh-prices`: fetch new prices, then rebuild and deploy the DTO.
+- `rebuild-dto`: rebuild and deploy the DTO without requesting Nintendo.
+
+Every operation deploys the complete `raw/` and `normalized/` data set, so the
+existing Pages files remain available.

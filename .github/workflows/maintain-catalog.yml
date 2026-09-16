@@ -1,0 +1,84 @@
+name: Maintain published catalog data
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Data maintenance operation
+        required: true
+        default: rebuild-dto
+        type: choice
+        options:
+          - refresh-catalog
+          - refresh-prices
+          - rebuild-dto
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+env:
+  PAGES_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Restore published raw snapshots
+        run: |
+          mkdir -p data/raw
+          curl --fail --location --retry 3 --retry-delay 2 \
+            --output data/raw/tw-catalog.json \
+            "${PAGES_URL}/raw/tw-catalog.json?run=${{ github.run_id }}"
+          curl --fail --location --retry 3 --retry-delay 2 \
+            --output data/raw/tw-prices.json \
+            "${PAGES_URL}/raw/tw-prices.json?run=${{ github.run_id }}"
+
+      - name: Check the data pipeline
+        run: npm test
+
+      - name: Refresh catalog snapshot
+        if: inputs.operation == 'refresh-catalog'
+        run: npm run fetch:catalog
+
+      - name: Refresh price snapshot
+        if: inputs.operation == 'refresh-prices'
+        run: npm run fetch:prices
+
+      - name: Build shared catalog DTO
+        run: npm run normalize:catalog
+
+      - name: Prepare static data
+        run: |
+          mkdir -p site/raw site/normalized
+          cp data/raw/tw-catalog.json site/raw/tw-catalog.json
+          cp data/raw/tw-prices.json site/raw/tw-prices.json
+          cp data/normalized/games.json site/normalized/games.json
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload catalog artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
