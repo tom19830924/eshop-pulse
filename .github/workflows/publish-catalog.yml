@@ -32,7 +32,7 @@ jobs:
         run: npm run fetch:catalog
 
       - name: Save raw catalog snapshot
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: raw-catalog
           path: data/raw/tw-catalog.json
@@ -51,7 +51,7 @@ jobs:
           node-version: 22
 
       - name: Restore raw catalog snapshot
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: raw-catalog
           path: data/raw
@@ -60,7 +60,7 @@ jobs:
         run: npm run fetch:prices
 
       - name: Save raw price snapshot
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: raw-prices
           path: data/raw/tw-prices.json
@@ -79,7 +79,7 @@ jobs:
           node-version: 22
 
       - name: Restore raw snapshots
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: raw-*
           path: data/raw
@@ -96,7 +96,7 @@ jobs:
           cp data/normalized/games.json site/normalized/games.json
 
       - name: Save static data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: site-data
           path: site
@@ -113,7 +113,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Restore static data
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: site-data
           path: site
