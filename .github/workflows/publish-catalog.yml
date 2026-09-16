@@ -1,0 +1,131 @@
+name: Publish catalog snapshot
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 02:23 Asia/Taipei (UTC+8). Avoid the start of an hour, when scheduled jobs are often delayed.
+    - cron: '23 18 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  fetch-catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Check the data pipeline
+        run: npm test
+
+      - name: Fetch current catalogs
+        run: npm run fetch:catalog
+
+      - name: Save raw catalog snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: raw-catalog
+          path: data/raw/tw-catalog.json
+          if-no-files-found: error
+
+  fetch-prices:
+    needs: fetch-catalog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Restore raw catalog snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: raw-catalog
+          path: data/raw
+
+      - name: Fetch current prices and sales
+        run: npm run fetch:prices
+
+      - name: Save raw price snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: raw-prices
+          path: data/raw/tw-prices.json
+          if-no-files-found: error
+
+  normalize:
+    needs: fetch-prices
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Restore raw snapshots
+        uses: actions/download-artifact@v4
+        with:
+          pattern: raw-*
+          path: data/raw
+          merge-multiple: true
+
+      - name: Build shared catalog DTO
+        run: npm run normalize:catalog
+
+      - name: Prepare static data
+        run: |
+          mkdir -p site/raw site/normalized
+          cp data/raw/tw-catalog.json site/raw/tw-catalog.json
+          cp data/raw/tw-prices.json site/raw/tw-prices.json
+          cp data/normalized/games.json site/normalized/games.json
+
+      - name: Save static data
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-data
+          path: site
+          if-no-files-found: error
+
+  deploy:
+    needs: normalize
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Restore static data
+        uses: actions/download-artifact@v4
+        with:
+          name: site-data
+          path: site
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload catalog artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

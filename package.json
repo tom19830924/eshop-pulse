@@ -1,0 +1,15 @@
+{
+  "name": "eshop-pulse",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "fetch:catalog": "node src/cli/fetch-catalogs.mjs",
+    "normalize:catalog": "node src/cli/normalize-catalogs.mjs",
+    "fetch:prices": "node src/cli/fetch-prices.mjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

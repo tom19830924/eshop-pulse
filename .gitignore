@@ -1,0 +1,10 @@
+.DS_Store
+
+data/
+!data/.gitkeep
+node_modules/
+
+# Future Xcode project files that are local to each developer.
+apps/ios/**/DerivedData/
+apps/ios/**/*.xcuserstate
+apps/ios/**/xcuserdata/
