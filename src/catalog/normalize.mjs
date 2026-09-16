@@ -12,7 +12,8 @@ export function normalizeSnapshot(snapshot) {
     throw new Error(`${snapshot.region} snapshot does not contain a readable item list`);
   }
 
-  const games = snapshot.items.map((item) => normalizeGame(snapshot, item)).filter((game) => game !== null);
+  const normalizedGames = snapshot.items.map((item) => normalizeGame(snapshot, item)).filter((game) => game !== null);
+  const games = deduplicateGamesByNsuid(normalizedGames);
   return {
     schemaVersion: 1,
     generatedAt: new Date().toISOString(),
@@ -73,6 +74,43 @@ function normalizeGame(snapshot, item) {
     sourceUrl,
     sourceUpdatedAt: snapshot.fetchedAt
   };
+}
+
+function deduplicateGamesByNsuid(games) {
+  const uniqueGames = [];
+  const indexByIdentity = new Map();
+
+  for (const game of games) {
+    if (game.nsuid === null) {
+      uniqueGames.push(game);
+      continue;
+    }
+
+    const identity = `${game.region}:${game.nsuid}`;
+    const existingIndex = indexByIdentity.get(identity);
+    if (existingIndex === undefined) {
+      indexByIdentity.set(identity, uniqueGames.length);
+      uniqueGames.push(game);
+      continue;
+    }
+
+    uniqueGames[existingIndex] = fillMissingFields(uniqueGames[existingIndex], game);
+  }
+
+  return uniqueGames;
+}
+
+function fillMissingFields(first, later) {
+  const merged = { ...first };
+  for (const [field, value] of Object.entries(later)) {
+    if (field === 'id' || field === 'region' || field === 'nsuid') continue;
+    if (isMissing(merged[field]) && !isMissing(value)) merged[field] = value;
+  }
+  return merged;
+}
+
+function isMissing(value) {
+  return value === null || value === undefined || value === '';
 }
 
 function nestedStringField(item, path) {

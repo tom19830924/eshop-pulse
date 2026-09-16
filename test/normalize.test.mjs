@@ -36,6 +36,72 @@ test('normalizes a Taiwan catalog item into the shared DTO', () => {
   });
 });
 
+test('deduplicates repeated NSUIDs, keeps first conflicting values, and fills missing fields', () => {
+  const items = [
+    {
+      title: 'Nintendo Labo Toy-Con 04: VR套裝 輕量版（僅附火箭筒）',
+      nsuid: '70010000027276',
+      publisher: null,
+      developer: 'Nintendo',
+      releaseDate: null,
+      category: [],
+      imageHero: { url: 'https://images.example.com/labo-lite.jpg' },
+      pageLink: 'リンクなし'
+    },
+    {
+      title: 'Nintendo Labo Toy-Con 04: VR套裝',
+      nsuid: '70010000027276',
+      publisher: 'Nintendo',
+      developer: 'Another Developer',
+      releaseDate: '2019-04-12',
+      category: ['盒裝版'],
+      imageHero: { url: 'https://images.example.com/labo.jpg' },
+      pageLink: '/tw/labo/'
+    }
+  ];
+  const originalItems = JSON.parse(JSON.stringify(items));
+  const catalog = normalizeSnapshot({
+    region: 'TW',
+    sourceUrl: 'https://www.nintendo.com/tw/api/software',
+    fetchedAt: '2026-09-14T00:00:00.000Z',
+    items
+  });
+
+  assert.equal(catalog.games.length, 1);
+  assert.equal(catalog.games[0].id, 'TW:70010000027276');
+  assert.equal(catalog.games[0].title, 'Nintendo Labo Toy-Con 04: VR套裝 輕量版（僅附火箭筒）');
+  assert.equal(catalog.games[0].imageUrl, 'https://images.example.com/labo-lite.jpg');
+  assert.equal(catalog.games[0].publisher, 'Nintendo');
+  assert.equal(catalog.games[0].developer, 'Nintendo');
+  assert.equal(catalog.games[0].releaseDate, '2019-04-12');
+  assert.equal(catalog.games[0].productType, '盒裝版');
+  assert.equal(catalog.games[0].sourceUrl, 'https://www.nintendo.com/tw/labo/');
+  assert.equal(catalog.sourceSnapshot.rawItemCount, 2);
+  assert.deepEqual(items, originalItems);
+});
+
+test('does not deduplicate different NSUIDs or NSUID-less entries by title', () => {
+  const catalog = normalizeSnapshot({
+    region: 'TW',
+    sourceUrl: 'https://www.nintendo.com/tw/api/software',
+    fetchedAt: '2026-09-14T00:00:00.000Z',
+    items: [
+      { title: 'Same title', nsuid: '70010000000001' },
+      { title: 'Same title', nsuid: '70010000000002' },
+      { title: 'No NSUID', sys: { id: 'missing-nsuid-a' } },
+      { title: 'No NSUID', sys: { id: 'missing-nsuid-b' } }
+    ]
+  });
+
+  assert.equal(catalog.games.length, 4);
+  assert.deepEqual(catalog.games.map((game) => game.id), [
+    'TW:70010000000001',
+    'TW:70010000000002',
+    'TW:source:missing-nsuid-a',
+    'TW:source:missing-nsuid-b'
+  ]);
+});
+
 test('selects Nintendo publisher aliases and applies explicit overrides', () => {
   const games = [
     { id: 'TW:1', publisher: 'Nintendo' },
