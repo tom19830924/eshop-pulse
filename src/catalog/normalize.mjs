@@ -4,7 +4,7 @@ const FIELD_NAMES = {
   developer: ['developer'],
   releaseDate: ['releaseDate'],
   productType: ['category', 'hardwareCategory'],
-  sourceUrl: ['pageLink']
+  sourceUrl: ['pageLinkCustom']
 };
 
 export function normalizeSnapshot(snapshot) {
@@ -59,7 +59,7 @@ function normalizeGame(snapshot, item) {
   const title = stringField(item, FIELD_NAMES.title);
   if (title === null) return null;
   const nsuid = findNsuid(item);
-  const sourceUrl = absoluteUrl(stringField(item, FIELD_NAMES.sourceUrl), snapshot.sourceUrl);
+  const sourceUrl = normalizeProductPageUrl(stringField(item, FIELD_NAMES.sourceUrl));
   const imageUrl = absoluteUrl(nestedStringField(item, ['imageHero', 'url']), snapshot.sourceUrl);
   return {
     id: nsuid ? `${snapshot.region}:${nsuid}` : `${snapshot.region}:source:${stableSourceKey(item, title)}`,
@@ -153,6 +153,29 @@ function absoluteUrl(value, baseUrl) {
   if (!value || value === 'リンクなし') return null;
   try {
     return new URL(value, baseUrl).toString();
+  } catch {
+    return null;
+  }
+}
+
+function normalizeProductPageUrl(value) {
+  if (!value) return null;
+
+  const candidate = value.trim();
+  if (!candidate) return null;
+
+  try {
+    const url = new URL(candidate);
+    if (url.protocol === 'http:' || url.protocol === 'https:') return url.toString();
+  } catch {
+    // Non-absolute values are only accepted below when they are root-relative paths.
+  }
+
+  if (!candidate.startsWith('/') || candidate.startsWith('//')) return null;
+
+  try {
+    const url = new URL(candidate, 'https://www.nintendo.com/');
+    return url.protocol === 'https:' && url.hostname === 'www.nintendo.com' ? url.toString() : null;
   } catch {
     return null;
   }

@@ -18,7 +18,8 @@ test('normalizes a Taiwan catalog item into the shared DTO', () => {
       category: ['下載版'],
       supportedLanguages: ['English', 'Traditional Chinese'],
       imageHero: { url: 'https://images.example.com/mario.jpg' },
-      pageLink: '/tw/software/70010000068664'
+      pageLink: 'URLを指定する',
+      pageLinkCustom: '/tw/software/70010000068664'
     }]
   });
 
@@ -38,6 +39,44 @@ test('normalizes a Taiwan catalog item into the shared DTO', () => {
   });
 });
 
+test('uses only valid custom product links in the DTO', () => {
+  const cases = [
+    {
+      pageLink: 'https://ec.nintendo.com/HK/zh/titles/{NSUID}',
+      pageLinkCustom: null,
+      expected: null
+    },
+    {
+      pageLink: 'URLを指定する',
+      pageLinkCustom: '/tw/switch/zelda-yakusai/',
+      expected: 'https://www.nintendo.com/tw/switch/zelda-yakusai/'
+    },
+    {
+      pageLinkCustom: 'https://www.nintendo.com/tw/switch/aruua/index.html',
+      expected: 'https://www.nintendo.com/tw/switch/aruua/index.html'
+    },
+    {
+      pageLinkCustom: 'https://www.pokemon.co.jp/ex/legends_z-a/tc/',
+      expected: 'https://www.pokemon.co.jp/ex/legends_z-a/tc/'
+    },
+    {
+      pageLinkCustom: 'URLを指定する',
+      expected: null
+    }
+  ];
+
+  for (const { pageLink, pageLinkCustom, expected } of cases) {
+    const catalog = normalizeSnapshot({
+      region: 'TW',
+      sourceUrl: 'https://www.nintendo.com/tw/api/software?sftab=all',
+      fetchedAt: '2026-09-14T00:00:00.000Z',
+      items: [{ title: 'Example Game', pageLink, pageLinkCustom }]
+    });
+
+    assert.equal(catalog.games[0].sourceUrl, expected);
+  }
+});
+
 test('deduplicates repeated NSUIDs, keeps first conflicting values, and fills missing fields', () => {
   const items = [
     {
@@ -49,7 +88,8 @@ test('deduplicates repeated NSUIDs, keeps first conflicting values, and fills mi
       category: [],
       supportedLanguages: null,
       imageHero: { url: 'https://images.example.com/labo-lite.jpg' },
-      pageLink: 'リンクなし'
+      pageLink: 'リンクなし',
+      pageLinkCustom: null
     },
     {
       title: 'Nintendo Labo Toy-Con 04: VR套裝',
@@ -60,7 +100,8 @@ test('deduplicates repeated NSUIDs, keeps first conflicting values, and fills mi
       category: ['盒裝版'],
       supportedLanguages: ['Japanese', 'Traditional Chinese'],
       imageHero: { url: 'https://images.example.com/labo.jpg' },
-      pageLink: '/tw/labo/'
+      pageLink: 'URLを指定する',
+      pageLinkCustom: '/tw/labo/'
     }
   ];
   const originalItems = JSON.parse(JSON.stringify(items));

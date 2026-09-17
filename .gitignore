@@ -2,6 +2,9 @@
 
 data/
 !data/.gitkeep
+# On case-insensitive file systems, `data/` also matches the iOS Data source folder.
+!apps/ios/eshop-pulse/eshop-pulse/Data/
+!apps/ios/eshop-pulse/eshop-pulse/Data/*.swift
 node_modules/
 
 # Future Xcode project files that are local to each developer.
