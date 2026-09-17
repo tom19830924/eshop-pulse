@@ -15,8 +15,9 @@ test/                  Pipeline tests
 .github/workflows/     Daily GitHub Actions pipeline
 ```
 
-The future iOS App will download `normalized/games.json` from GitHub Pages.
-It does not read the raw files directly.
+The future iOS App will download `normalized/games.json` from GitHub Pages and
+can check `normalized/games.meta.json` for its generation time. It does not
+read the raw files directly.
 
 ## Commands
 
@@ -29,13 +30,19 @@ npm run normalize:catalog
 `fetch:catalog` stores every Taiwan software-list page, in request order, at
 `data/raw/tw-catalog.json`. The file is a JSON array: aside from that outer
 array and its separators, each API response body is kept unchanged.
+It also writes `data/raw/tw-catalog.meta.json`, with a `timestamp` containing
+the snapshot generation time as an integer Unix timestamp in seconds.
 
 `normalize:catalog` creates the single app DTO at
-`data/normalized/games.json`.
+`data/normalized/games.json`. It also writes
+`data/normalized/games.meta.json` with the DTO generation time as an integer
+Unix timestamp in seconds.
 
 `fetch:prices` reads the raw catalog, requests prices for every game in the
 Taiwan catalog 50 games at a time and sequentially, then preserves each
-official price response at `data/raw/tw-prices.json`.
+official price response at `data/raw/tw-prices.json`. It also writes
+`data/raw/tw-price.meta.json` with the price snapshot generation time as an
+integer Unix timestamp in seconds.
 
 Run `normalize:catalog` last: it merges the two raw files into the App DTO,
 including current price and sale information. The App can filter by publisher
@@ -49,13 +56,16 @@ npm test
 
 ## Free deployment
 
-GitHub Actions runs daily at 02:23 Asia/Taipei and publishes all three files to
-GitHub Pages:
+GitHub Actions runs daily at 02:23 Asia/Taipei and publishes four raw files
+and two DTO files to GitHub Pages:
 
 ```text
 https://<github-user>.github.io/eshop-pulse/raw/tw-catalog.json
+https://<github-user>.github.io/eshop-pulse/raw/tw-catalog.meta.json
 https://<github-user>.github.io/eshop-pulse/raw/tw-prices.json
+https://<github-user>.github.io/eshop-pulse/raw/tw-price.meta.json
 https://<github-user>.github.io/eshop-pulse/normalized/games.json
+https://<github-user>.github.io/eshop-pulse/normalized/games.meta.json
 ```
 
 The repository and Pages site must be public when using GitHub Free. Enable
@@ -67,8 +77,10 @@ The daily `Publish catalog snapshot` workflow runs the full catalog, price,
 normalization, and Pages deployment pipeline at 02:23 Asia/Taipei.
 
 Use the `Maintain published catalog data` workflow from the Actions tab when a
-single maintenance operation is needed. It restores the two raw snapshots from
-Pages first, then offers three operations:
+single maintenance operation is needed. It restores the two raw snapshots and
+any available metadata files from Pages first, then offers three operations.
+Older Pages deployments may not have metadata files; those files are preserved
+when available and generated when their corresponding snapshot is refreshed.
 
 - `refresh-catalog`: fetch a new catalog, then rebuild and deploy the DTO.
 - `refresh-prices`: fetch new prices, then rebuild and deploy the DTO.

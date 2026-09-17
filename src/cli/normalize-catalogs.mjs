@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { writeJsonAtomically } from '../lib/files.mjs';
+import { writeJsonSnapshot } from '../lib/files.mjs';
 import { combineCatalogs, normalizeSnapshot, taiwanSnapshotFromRawResponses } from '../catalog/normalize.mjs';
 import { enrichGamesWithPrices } from '../catalog/prices.mjs';
 
@@ -13,7 +13,11 @@ const priceResponses = JSON.parse(await readFile(resolve(rawDirectory, 'tw-price
 const prices = priceResponses.flatMap((response) => response.prices ?? []);
 const normalized = { ...combined, generatedAt: new Date().toISOString(), games: enrichGamesWithPrices(combined.games, prices) };
 
-await writeJsonAtomically(resolve(process.cwd(), 'data/normalized/games.json'), normalized);
+await writeJsonSnapshot(
+  resolve(process.cwd(), 'data/normalized/games.json'),
+  resolve(process.cwd(), 'data/normalized/games.meta.json'),
+  normalized
+);
 for (const catalog of catalogs) {
   console.log(`${catalog.region}: ${catalog.games.length} normalized games; ${catalog.diagnostics.missingNsuid} without NSUID`);
 }

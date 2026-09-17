@@ -2,11 +2,12 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { PRICE_BATCH_SIZE, priceRequestUrl } from '../catalog/prices.mjs';
 import { normalizeSnapshot, taiwanSnapshotFromRawResponses } from '../catalog/normalize.mjs';
-import { writeRawJsonArrayAtomically } from '../lib/files.mjs';
+import { writeRawJsonArraySnapshot } from '../lib/files.mjs';
 import { fetchTextWithRetry } from '../lib/http.mjs';
 
 const rawCatalogPath = resolve(process.cwd(), 'data/raw/tw-catalog.json');
 const rawPricesPath = resolve(process.cwd(), 'data/raw/tw-prices.json');
+const rawPriceMetadataPath = resolve(process.cwd(), 'data/raw/tw-price.meta.json');
 const BATCH_DELAY_MS = 1_000;
 const rawCatalogResponses = JSON.parse(await readFile(rawCatalogPath, 'utf8'));
 const catalog = normalizeSnapshot(taiwanSnapshotFromRawResponses(rawCatalogResponses));
@@ -18,8 +19,8 @@ for (const [region, games] of Object.entries(groupByRegion(catalog.games))) {
   console.log(`${region}: fetched prices for ${nsuids.length} of ${games.length} games`);
 }
 
-await writeRawJsonArrayAtomically(rawPricesPath, priceResponses);
-console.log(`Wrote ${priceResponses.length} Taiwan price response batches`);
+await writeRawJsonArraySnapshot(rawPricesPath, rawPriceMetadataPath, priceResponses);
+console.log(`Wrote tw-prices.json and tw-price.meta.json (${priceResponses.length} Taiwan price response batches)`);
 
 function groupByRegion(games) {
   return Object.groupBy(games, (game) => game.region);

@@ -35,7 +35,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: raw-catalog
-          path: data/raw/tw-catalog.json
+          path: |
+            data/raw/tw-catalog.json
+            data/raw/tw-catalog.meta.json
           if-no-files-found: error
 
   fetch-prices:
@@ -63,7 +65,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: raw-prices
-          path: data/raw/tw-prices.json
+          path: |
+            data/raw/tw-prices.json
+            data/raw/tw-price.meta.json
           if-no-files-found: error
 
   normalize:
@@ -92,8 +96,11 @@ jobs:
         run: |
           mkdir -p site/raw site/normalized
           cp data/raw/tw-catalog.json site/raw/tw-catalog.json
+          cp data/raw/tw-catalog.meta.json site/raw/tw-catalog.meta.json
           cp data/raw/tw-prices.json site/raw/tw-prices.json
+          cp data/raw/tw-price.meta.json site/raw/tw-price.meta.json
           cp data/normalized/games.json site/normalized/games.json
+          cp data/normalized/games.meta.json site/normalized/games.meta.json
 
       - name: Save static data
         uses: actions/upload-artifact@v7

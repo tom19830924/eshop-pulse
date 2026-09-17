@@ -49,6 +49,17 @@ jobs:
           curl --fail --location --retry 3 --retry-delay 2 \
             --output data/raw/tw-prices.json \
             "${PAGES_URL}/raw/tw-prices.json?run=${{ github.run_id }}"
+          for filename in tw-catalog.meta.json tw-price.meta.json; do
+            status="$(curl --silent --show-error --location --retry 3 --retry-delay 2 \
+              --output "data/raw/${filename}" --write-out '%{http_code}' \
+              "${PAGES_URL}/raw/${filename}?run=${{ github.run_id }}")"
+            if [ "$status" = "404" ]; then
+              rm -f "data/raw/${filename}"
+            elif [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
+              echo "Failed to restore ${filename}: HTTP ${status}" >&2
+              exit 1
+            fi
+          done
 
       - name: Check the data pipeline
         run: npm test
@@ -69,7 +80,13 @@ jobs:
           mkdir -p site/raw site/normalized
           cp data/raw/tw-catalog.json site/raw/tw-catalog.json
           cp data/raw/tw-prices.json site/raw/tw-prices.json
+          for filename in tw-catalog.meta.json tw-price.meta.json; do
+            if [ -f "data/raw/${filename}" ]; then
+              cp "data/raw/${filename}" "site/raw/${filename}"
+            fi
+          done
           cp data/normalized/games.json site/normalized/games.json
+          cp data/normalized/games.meta.json site/normalized/games.meta.json
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

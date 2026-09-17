@@ -16,6 +16,7 @@ test('normalizes a Taiwan catalog item into the shared DTO', () => {
       developer: 'Nintendo',
       releaseDate: '2023-10-20',
       category: ['下載版'],
+      supportedLanguages: ['English', 'Traditional Chinese'],
       imageHero: { url: 'https://images.example.com/mario.jpg' },
       pageLink: '/tw/software/70010000068664'
     }]
@@ -30,6 +31,7 @@ test('normalizes a Taiwan catalog item into the shared DTO', () => {
     developer: 'Nintendo',
     releaseDate: '2023-10-20',
     productType: '下載版',
+    supportedLanguages: ['English', 'Traditional Chinese'],
     imageUrl: 'https://images.example.com/mario.jpg',
     sourceUrl: 'https://www.nintendo.com/tw/software/70010000068664',
     sourceUpdatedAt: '2026-09-14T00:00:00.000Z'
@@ -45,6 +47,7 @@ test('deduplicates repeated NSUIDs, keeps first conflicting values, and fills mi
       developer: 'Nintendo',
       releaseDate: null,
       category: [],
+      supportedLanguages: null,
       imageHero: { url: 'https://images.example.com/labo-lite.jpg' },
       pageLink: 'リンクなし'
     },
@@ -55,6 +58,7 @@ test('deduplicates repeated NSUIDs, keeps first conflicting values, and fills mi
       developer: 'Another Developer',
       releaseDate: '2019-04-12',
       category: ['盒裝版'],
+      supportedLanguages: ['Japanese', 'Traditional Chinese'],
       imageHero: { url: 'https://images.example.com/labo.jpg' },
       pageLink: '/tw/labo/'
     }
@@ -75,9 +79,21 @@ test('deduplicates repeated NSUIDs, keeps first conflicting values, and fills mi
   assert.equal(catalog.games[0].developer, 'Nintendo');
   assert.equal(catalog.games[0].releaseDate, '2019-04-12');
   assert.equal(catalog.games[0].productType, '盒裝版');
+  assert.deepEqual(catalog.games[0].supportedLanguages, ['Japanese', 'Traditional Chinese']);
   assert.equal(catalog.games[0].sourceUrl, 'https://www.nintendo.com/tw/labo/');
   assert.equal(catalog.sourceSnapshot.rawItemCount, 2);
   assert.deepEqual(items, originalItems);
+});
+
+test('preserves null supported languages in the normalized DTO', () => {
+  const catalog = normalizeSnapshot({
+    region: 'TW',
+    sourceUrl: 'https://www.nintendo.com/tw/api/software',
+    fetchedAt: '2026-09-14T00:00:00.000Z',
+    items: [{ title: 'Game without language data', nsuid: '70010000000003', supportedLanguages: null }]
+  });
+
+  assert.equal(catalog.games[0].supportedLanguages, null);
 });
 
 test('does not deduplicate different NSUIDs or NSUID-less entries by title', () => {

@@ -70,6 +70,7 @@ function normalizeGame(snapshot, item) {
     developer: stringField(item, FIELD_NAMES.developer),
     releaseDate: stringField(item, FIELD_NAMES.releaseDate),
     productType: normalizeProductType(valueField(item, FIELD_NAMES.productType)),
+    supportedLanguages: Array.isArray(item.supportedLanguages) ? [...item.supportedLanguages] : null,
     imageUrl,
     sourceUrl,
     sourceUpdatedAt: snapshot.fetchedAt
