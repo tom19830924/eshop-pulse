@@ -7,6 +7,8 @@ struct Game: Decodable, Identifiable, Hashable, Sendable {
     let imageURL: URL?
     let sourceURL: URL?
     let price: GamePrice
+    let supportedLanguages: [String]?
+    let productType: String?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -15,6 +17,17 @@ struct Game: Decodable, Identifiable, Hashable, Sendable {
         case imageURL = "imageUrl"
         case sourceURL = "sourceUrl"
         case price
+        case supportedLanguages
+        case productType
+    }
+
+    var productTypes: [String] {
+        guard let productType else { return [] }
+
+        return productType
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
     }
 
     var releaseDateValue: Date? {

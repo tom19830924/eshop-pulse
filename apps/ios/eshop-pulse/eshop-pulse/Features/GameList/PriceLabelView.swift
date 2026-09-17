@@ -8,20 +8,21 @@ struct PriceLabelView: View {
             HStack {
                 Text(price.regular?.amount ?? "")
                     .strikethrough()
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.primary)
                 Text(saleAmount)
                     .foregroundStyle(.red)
                     .bold()
-                Text("特價")
-                    .font(.caption)
-                    .foregroundStyle(.red)
+                if let salePriceRatio = price.salePriceRatio {
+                    Text("\((salePriceRatio * 100).formatted(.number.precision(.fractionLength(0))))%")
+                        .foregroundStyle(.red)
+                }
             }
         } else if let amount = price.regular?.amount {
             Text(amount)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.primary)
         } else {
             Text(priceStatusLabel)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.primary)
         }
     }
 

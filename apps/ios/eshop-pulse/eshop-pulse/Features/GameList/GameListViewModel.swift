@@ -4,24 +4,38 @@ import Observation
 @MainActor
 @Observable
 final class GameListViewModel {
+    private static let favoriteGameIDsKey = "favoriteGameIDs"
+
     private let repository: any CatalogRepository
+    private let userDefaults: UserDefaults
     private var loadTask: Task<Void, Never>?
     private var activeRequestID: UUID?
+    private var hasCatalog = false
 
     private(set) var loadingState: CatalogLoadingState = .idle
     private(set) var generatedAt: String?
-    private var games: [Game] = []
+    private(set) var games: [Game] = []
+    private(set) var favoriteGameIDs: Set<String>
+    private(set) var updateError: String?
 
-    var searchText = "" {
-        didSet { updateVisibleGames() }
-    }
-    var showsSalesOnly = false {
-        didSet { updateVisibleGames() }
-    }
-    private(set) var visibleGames: [Game] = []
-
-    init(repository: any CatalogRepository) {
+    init(repository: any CatalogRepository, userDefaults: UserDefaults = .standard) {
         self.repository = repository
+        self.userDefaults = userDefaults
+        favoriteGameIDs = Set(userDefaults.stringArray(forKey: Self.favoriteGameIDsKey) ?? [])
+    }
+
+    func isFavorite(_ game: Game) -> Bool {
+        favoriteGameIDs.contains(game.id)
+    }
+
+    func toggleFavorite(for game: Game) {
+        if favoriteGameIDs.contains(game.id) {
+            favoriteGameIDs.remove(game.id)
+        } else {
+            favoriteGameIDs.insert(game.id)
+        }
+
+        userDefaults.set(favoriteGameIDs.sorted(), forKey: Self.favoriteGameIDsKey)
     }
 
     func loadIfNeeded() {
@@ -44,29 +58,44 @@ final class GameListViewModel {
     private func performLoad() async {
         let requestID = UUID()
         activeRequestID = requestID
-        loadingState = .loading
 
         do {
-            let catalog = try await repository.fetchCatalog()
+            if let cachedCatalog = await repository.loadCachedCatalog() {
+                try Task.checkCancellation()
+                guard activeRequestID == requestID else { return }
+                apply(cachedCatalog)
+                loadingState = .loaded
+            } else if !hasCatalog {
+                loadingState = .loading
+            }
+
+            let updatedCatalog = try await repository.refreshCatalogIfNeeded()
             try Task.checkCancellation()
             guard activeRequestID == requestID else { return }
-            games = catalog.games
-            generatedAt = catalog.generatedAt
-            updateVisibleGames()
+            if let updatedCatalog {
+                apply(updatedCatalog)
+            }
+            updateError = nil
             loadingState = .loaded
         } catch is CancellationError {
             guard activeRequestID == requestID else { return }
-            loadingState = .idle
+            if !hasCatalog {
+                loadingState = .idle
+            }
         } catch {
             guard activeRequestID == requestID else { return }
-            loadingState = .failed("無法更新遊戲資料，請檢查網路後再試一次。")
+            if hasCatalog {
+                updateError = "無法更新遊戲資料，請檢查網路後再試一次。"
+                loadingState = .loaded
+            } else {
+                loadingState = .failed("無法更新遊戲資料，請檢查網路後再試一次。")
+            }
         }
     }
 
-    private func updateVisibleGames() {
-        visibleGames = games.filter { game in
-            let matchesSearch = searchText.isEmpty || game.title.localizedStandardContains(searchText)
-            return matchesSearch && (!showsSalesOnly || game.price.isOnSale)
-        }
+    private func apply(_ catalog: CatalogDocument) {
+        games = catalog.games
+        generatedAt = catalog.generatedAt
+        hasCatalog = true
     }
 }
