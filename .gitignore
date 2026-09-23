@@ -11,3 +11,6 @@ node_modules/
 apps/ios/**/DerivedData/
 apps/ios/**/*.xcuserstate
 apps/ios/**/xcuserdata/
+
+# Swift Package Manager build artifacts.
+**/.build/

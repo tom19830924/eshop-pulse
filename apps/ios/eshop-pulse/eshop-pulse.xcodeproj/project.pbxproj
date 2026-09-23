@@ -6,6 +6,15 @@
 	objectVersion = 90;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		C11111111111111111111111 /* EshopService in Frameworks */ = {isa = PBXBuildFile; productRef = B11111111111111111111111 /* EshopService */; };
+		C22222222222222222222222 /* FavoritesListFeature in Frameworks */ = {isa = PBXBuildFile; productRef = B22222222222222222222222 /* FavoritesListFeature */; };
+		C33333333333333333333333 /* BrowseListFeature in Frameworks */ = {isa = PBXBuildFile; productRef = B33333333333333333333333 /* BrowseListFeature */; };
+		C44444444444444444444444 /* GameDetailFeature in Frameworks */ = {isa = PBXBuildFile; productRef = B44444444444444444444444 /* GameDetailFeature */; };
+		C55555555555555555555555 /* EshopService in Frameworks */ = {isa = PBXBuildFile; productRef = B55555555555555555555555 /* EshopService */; };
+		C66666666666666666666666 /* FavoritesListFeature in Frameworks */ = {isa = PBXBuildFile; productRef = B66666666666666666666666 /* FavoritesListFeature */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		CE226DAC305BD8650075CCDC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,9 +30,25 @@
 		100000000000000000000120 /* eshop-pulseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "eshop-pulseTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D11111111111111111111111 /* Exceptions for "eshop-pulse" folder in "eshop-pulse" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Features/BrowseListFeature,
+				Features/EshopService,
+				Features/FavoritesListFeature,
+				Features/GameDetailFeature,
+			);
+			target = 000000000000000100000000 /* eshop-pulse */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		000000000000000000000010 /* eshop-pulse */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D11111111111111111111111 /* Exceptions for "eshop-pulse" folder in "eshop-pulse" target */,
+			);
 			path = "eshop-pulse";
 			sourceTree = "<group>";
 		};
@@ -38,11 +63,17 @@
 		000000000000000130000000 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				C11111111111111111111111 /* EshopService in Frameworks */,
+				C22222222222222222222222 /* FavoritesListFeature in Frameworks */,
+				C33333333333333333333333 /* BrowseListFeature in Frameworks */,
+				C44444444444444444444444 /* GameDetailFeature in Frameworks */,
 			);
 		};
 		100000000000000130000000 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				C55555555555555555555555 /* EshopService in Frameworks */,
+				C66666666666666666666666 /* FavoritesListFeature in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -83,6 +114,12 @@
 				000000000000000000000010 /* eshop-pulse */,
 			);
 			name = "eshop-pulse";
+			packageProductDependencies = (
+				B11111111111111111111111 /* EshopService */,
+				B22222222222222222222222 /* FavoritesListFeature */,
+				B33333333333333333333333 /* BrowseListFeature */,
+				B44444444444444444444444 /* GameDetailFeature */,
+			);
 			productName = MyApp;
 			productReference = 000000000000000000000120 /* eshop-pulse.app */;
 			productType = "com.apple.product-type.application";
@@ -104,6 +141,10 @@
 				100000000000000000000010 /* eshop-pulseTests */,
 			);
 			name = "eshop-pulseTests";
+			packageProductDependencies = (
+				B55555555555555555555555 /* EshopService */,
+				B66666666666666666666666 /* FavoritesListFeature */,
+			);
 			productName = "eshop-pulseTests";
 			productReference = 100000000000000000000120 /* eshop-pulseTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -136,6 +177,12 @@
 			);
 			mainGroup = 000000000000000000000001;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A11111111111111111111111 /* XCLocalSwiftPackageReference "eshop-pulse/Features/EshopService" */,
+				A22222222222222222222222 /* XCLocalSwiftPackageReference "eshop-pulse/Features/FavoritesListFeature" */,
+				A33333333333333333333333 /* XCLocalSwiftPackageReference "eshop-pulse/Features/BrowseListFeature" */,
+				A44444444444444444444444 /* XCLocalSwiftPackageReference "eshop-pulse/Features/GameDetailFeature" */,
+			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 000000000000000000000020 /* Products */;
 			projectDirPath = "";
@@ -317,12 +364,15 @@
 		000000000000000111000000 /* Debug configuration for PBXNativeTarget "eshop-pulse" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W2F3ET8ZKY;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -337,8 +387,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "devplaceholder.$(PROJECT_UNIQUE_VALUE:identifier).$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tom19830924.eshoppulse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -355,12 +406,15 @@
 		000000000000000112000000 /* Release configuration for PBXNativeTarget "eshop-pulse" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W2F3ET8ZKY;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -375,8 +429,9 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "devplaceholder.$(PROJECT_UNIQUE_VALUE:identifier).$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tom19830924.eshoppulse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -396,13 +451,13 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "devplaceholder.$(PROJECT_UNIQUE_VALUE:identifier).eshop-pulseTests";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tom19830924.eshoppulse.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
@@ -418,13 +473,13 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "devplaceholder.$(PROJECT_UNIQUE_VALUE:identifier).eshop-pulseTests";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tom19830924.eshoppulse.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
@@ -462,6 +517,58 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A11111111111111111111111 /* XCLocalSwiftPackageReference "eshop-pulse/Features/EshopService" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "eshop-pulse/Features/EshopService";
+		};
+		A22222222222222222222222 /* XCLocalSwiftPackageReference "eshop-pulse/Features/FavoritesListFeature" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "eshop-pulse/Features/FavoritesListFeature";
+		};
+		A33333333333333333333333 /* XCLocalSwiftPackageReference "eshop-pulse/Features/BrowseListFeature" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "eshop-pulse/Features/BrowseListFeature";
+		};
+		A44444444444444444444444 /* XCLocalSwiftPackageReference "eshop-pulse/Features/GameDetailFeature" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "eshop-pulse/Features/GameDetailFeature";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B11111111111111111111111 /* EshopService */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A11111111111111111111111 /* XCLocalSwiftPackageReference "eshop-pulse/Features/EshopService" */;
+			productName = EshopService;
+		};
+		B22222222222222222222222 /* FavoritesListFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A22222222222222222222222 /* XCLocalSwiftPackageReference "eshop-pulse/Features/FavoritesListFeature" */;
+			productName = FavoritesListFeature;
+		};
+		B33333333333333333333333 /* BrowseListFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A33333333333333333333333 /* XCLocalSwiftPackageReference "eshop-pulse/Features/BrowseListFeature" */;
+			productName = BrowseListFeature;
+		};
+		B44444444444444444444444 /* GameDetailFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A44444444444444444444444 /* XCLocalSwiftPackageReference "eshop-pulse/Features/GameDetailFeature" */;
+			productName = GameDetailFeature;
+		};
+		B55555555555555555555555 /* EshopService */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A11111111111111111111111 /* XCLocalSwiftPackageReference "eshop-pulse/Features/EshopService" */;
+			productName = EshopService;
+		};
+		B66666666666666666666666 /* FavoritesListFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A22222222222222222222222 /* XCLocalSwiftPackageReference "eshop-pulse/Features/FavoritesListFeature" */;
+			productName = FavoritesListFeature;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 000000000000000000000000 /* Project object */;
 }
